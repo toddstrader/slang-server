@@ -35,6 +35,10 @@ lsp::Location toLocation(const SourceRange& range, const SourceManager& sourceMa
 
 lsp::Location toLocation(const SourceLocation& loc, const SourceManager& sourceManager);
 
+std::optional<SourceLocation> toSourceLocation(const lsp::TextDocumentPositionParams& params,
+                                               const BufferID buffId,
+                                               const SourceManager& sourceManager);
+
 lsp::MarkupContent markdown(std::string& md);
 
 std::string portString(ast::ArgumentDirection dir);

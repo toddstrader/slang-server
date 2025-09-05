@@ -14,6 +14,7 @@
 #include "completions/CompletionDispatch.h"
 #include "lsp/LspTypes.h"
 #include "lsp/URI.h"
+#include "util/Converters.h"
 #include "util/Logging.h"
 #include <algorithm>
 #include <filesystem>
@@ -277,6 +278,30 @@ std::vector<std::string> SlangServer::getInstances(const lsp::TextDocumentPositi
         ERROR("No compilation available, cannot get instances");
         return {};
     }
+    auto doc = m_driver->getDocument(params.textDocument.uri);
+    if (!doc) {
+        ERROR("Could not find document: {}", params.textDocument.uri.str());
+        return {};
+    }
+    auto& shallow = doc->getAnalysis();
+    auto loc = toSourceLocation(params, doc->getBuffer(), m_driver->sm);
+    if (!loc) {
+        ERROR("Could not find text document position");
+        return {};
+    }
+    const auto symbol = shallow.getSymbolAt(*loc);
+    if (!symbol) {
+        ERROR("Could not find symbol for instances");
+        return {};
+    }
+    const auto hier = symbol->getHierarchicalPath();
+    const auto firstDot = hier.find('.');
+    if (firstDot == std::string::npos) {
+        ERROR("Problem finding parent module of {}", hier);
+        return {};
+    }
+    const auto mod = hier.substr(0, firstDot);
+    auto modInstances = getInstancesOfModule(mod);
     return m_driver->comp->getInstances(params);
 }
 

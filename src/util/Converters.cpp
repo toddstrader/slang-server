@@ -70,6 +70,12 @@ lsp::Location toLocation(const SourceLocation& loc, const SourceManager& sourceM
                                              .end = toPosition(loc + 1, sourceManager)}};
 }
 
+std::optional<SourceLocation> toSourceLocation(const lsp::TextDocumentPositionParams& params,
+                                               const BufferID buffId,
+                                               const SourceManager& sourceManager) {
+    return sourceManager.getSourceLocation(buffId, params.position.line, params.position.character);
+}
+
 lsp::MarkupContent markdown(std::string& md) {
     return lsp::MarkupContent{.kind = lsp::MarkupKind::make<"markdown">(), .value = md};
 }

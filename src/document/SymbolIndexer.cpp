@@ -91,7 +91,6 @@ const slang::ast::Scope* SymbolIndexer::getScopeForSyntax(
 
 /// Module instances- module name, parameters, ports
 void SymbolIndexer::handle(const slang::ast::InstanceSymbol& sym) {
-
     if (sym.getSyntax() == nullptr) {
         // This means it's the top level- just index the module name
         auto& modName =
@@ -107,6 +106,8 @@ void SymbolIndexer::handle(const slang::ast::InstanceSymbol& sym) {
     switch (sym.getSyntax()->kind) {
         case slang::syntax::SyntaxKind::HierarchicalInstance: {
             auto& instSyntax = sym.getSyntax()->as<slang::syntax::HierarchicalInstanceSyntax>();
+
+            symdex[&instSyntax.decl->name] = &sym;
 
             // Mark ports
             for (auto port : instSyntax.connections) {
