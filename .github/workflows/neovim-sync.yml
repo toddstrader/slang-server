@@ -16,6 +16,7 @@ on:
 
 jobs:
   sync:
+    if: github.repository == 'hudson-trading/slang-server'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source repository
@@ -23,7 +24,7 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Set up uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v8
       - name: Mirror the subdirectory to the plugin repo
         env:
           GH_PAT: ${{ secrets.NEOVIM_PAT }}
